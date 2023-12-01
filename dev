@@ -1,5 +1,22 @@
-def read_csv():
-    pass
+def read_csv(file_path, orientated = False):
+    with open(file_path, "r+", encoding="utf-8") as f:
+        content = f.readlines()
+    content = [i.strip().split(",")[:2] for i in content]
+    edges = [[int(i.strip()) for i in line] for line in content]
+    graph = {}
+    for a, b in edges:
+        if not orientated:
+            if a not in graph:
+                graph[a] = []
+            if b not in graph:
+                graph[b] = []
+            graph[a].append(b)
+            graph[b].append(a)
+        else:
+            if a not in graph:
+                graph[a] = []
+            graph[a].append(b)
+    return graph
 
 def hamilton_cycle():
     pass
@@ -13,3 +30,6 @@ def izomorf_check():
 
 def paint_graph():
     pass
+
+
+print(read_csv("ff.csv", True))

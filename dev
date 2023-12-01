@@ -1,0 +1,15 @@
+def read_csv():
+    pass
+
+def hamilton_cycle():
+    pass
+
+def eiler_cycle():
+    pass
+
+def izomorf_check():
+    pass
+
+
+def paint_graph():
+    pass

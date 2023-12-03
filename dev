@@ -28,8 +28,30 @@ def izomorf_check():
     pass
 
 
-def paint_graph():
-    pass
-
-
-print(read_csv("ff.csv", True))
+def paint_graph(graph):
+    visited = [list(graph.keys())[0]]
+    colors = [["black", [visited[0]]], ["red", []], ["blue", []]]
+    connect = [visited[0]]
+    stop = False
+    while len(visited) < len(graph) and not stop:
+        current = connect.pop()
+        for i in graph[current]:
+            if i not in visited:
+                visited.append(i)
+                for color in range(len(colors)):
+                    if color == 1 and len(colors[color][1]) > 0 and len(colors[color+1][1]) == 0:
+                        colors[color+1][1].append(i)
+                        break
+                    if all(elem not in graph[i] for elem in colors[color][1]) and i not in colors[color][1]:
+                        colors[color][1].append(i)
+                        break
+                connect.append(i)
+    if stop:
+        return False
+    else:
+        color_map = {}
+        for color in colors:
+            for node in color[1]:
+                color_map[node] = color[0]
+        return color_map
+print(paint_graph(read_csv("ff.csv")))

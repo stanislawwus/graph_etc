@@ -19,7 +19,21 @@ def read_csv(file_path, orientated = False):
     return graph
 
 def hamilton_cycle():
-    pass
+    res=[]
+    def hamilton(graf, size, pt, path=[]):
+        if pt not in path:
+            path.append(pt)
+            if len(path)==size:
+                res.append(path)
+                return path
+            for pt_next in graf[pt]:
+                res_path = [i for i in path]
+                hamilton(graf, size, pt_next, res_path)
+    for i in list(graph.keys()):
+        hamilton(graph, len(graph), i, [])
+    if len(res)!=0:
+        return res[0]
+    return 'miss input, try again but with the new graph'
 
 def eiler_cycle():
     pass

@@ -21,8 +21,60 @@ def read_csv(file_path, orientated = False):
 def hamilton_cycle():
     pass
 
-def eiler_cycle():
-    pass
+def eiler_cycle(graph, orientated = False):
+    def is_connected(graph):
+        visited = set()
+
+        def dfs(vertex):
+            visited.add(vertex)
+            for degree in graph[vertex]:
+                if degree not in visited:
+                    dfs(degree)
+
+        start_vertex = next(iter(graph))
+        dfs(start_vertex)
+
+        return len(visited) == len(graph)
+    if not is_connected(graph):
+        return 'Eulerian cycle does not exist.'
+    if orientated is False:
+        for items in graph.items():
+            if len(items[1]) % 2 != 0:
+                return 'Eulerian cycle does not exist'
+        current_vertex = list(graph.keys())[0]
+        eulerian_cycle = [current_vertex]
+        while graph[current_vertex]:
+            next_vertex = graph[current_vertex].pop(0)
+            graph[next_vertex].remove(current_vertex)
+            current_vertex = next_vertex
+            eulerian_cycle.append(current_vertex)
+        return eulerian_cycle
+    else:
+        graph_vertex_degrees = {vertex: len(neighbors) for vertex, neighbors in graph.items()}
+        current_vertex = None
+        for vertex, outdegree in graph_vertex_degrees.items():
+            if outdegree > 0:
+                current_vertex = vertex
+                break
+
+        eulerian_cycle = [current_vertex]
+        while graph[current_vertex]:
+            next_vertex = graph[current_vertex].pop(0)
+            graph_vertex_degrees[current_vertex] -= 1
+            current_vertex = next_vertex
+            eulerian_cycle.append(current_vertex)
+
+        while any(graph_vertex_degrees.values()):
+            for i, vertex in enumerate(eulerian_cycle):
+                if graph[vertex]:
+                    subcycle = [vertex]
+                    while graph[vertex]:
+                        next_vertex = graph[vertex].pop(0)
+                        graph_vertex_degrees[vertex] -= 1
+                        vertex = next_vertex
+                        subcycle.append(vertex)
+                    eulerian_cycle = eulerian_cycle[:i+1] + subcycle + eulerian_cycle[i+1:]
+        return eulerian_cycle
 
 def izomorf_check():
     pass

@@ -18,8 +18,33 @@ def read_csv(file_path, orientated = False):
             graph[a].append(b)
     return graph
 
-def hamilton_cycle():
-    pass
+def main(graph):
+    res=[]
+    def hamilton(graf, size, start, path=[]):
+        if start not in path:
+            path.append(start)
+            if len(path)==size:
+                res.append(path)
+                return path
+            for start_next in graf[start]:
+                res_path = [i for i in path]
+                hamilton (graf, size, start_next, res_path)
+    for i in list(graph.keys()):
+        hamilton(graph, len(graph), i, [])
+    check=[]#for orientated graphs
+    check2=0
+    if len(res)!=0:
+        for i in res:
+            check.append(i[0])
+    check=set(check)
+    for i in check:
+        if i in list(graph.keys()):
+            check2+=1
+    if check2==len(list(graph.keys())) and check2!=0:
+        return res[0]
+    if len(res)!=0:
+        return f'no hamilton cycle but this graph has hamilton path or pathes: {res}'
+    return 'miss input, try again but with the new graph'
 
 def eiler_cycle(graph, orientated = False):
     def is_connected(graph):

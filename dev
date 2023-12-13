@@ -1,3 +1,6 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+
 def read_csv(file_path, orientated = False):
     with open(file_path, "r+", encoding="utf-8") as f:
         content = f.readlines()
@@ -18,18 +21,128 @@ def read_csv(file_path, orientated = False):
             graph[a].append(b)
     return graph
 
-def hamilton_cycle():
-    pass
+def main(graph):
+    res=[]
+    def hamilton(graf, size, start, path=[]):
+        if start not in path:
+            path.append(start)
+            if len(path)==size:
+                res.append(path)
+                return path
+            for start_next in graf[start]:
+                res_path = [i for i in path]
+                hamilton (graf, size, start_next, res_path)
+    for i in list(graph.keys()):
+        hamilton(graph, len(graph), i, [])
+    check=[]#for orientated graphs
+    check2=0
+    if len(res)!=0:
+        for i in res:
+            check.append(i[0])
+    check=set(check)
+    for i in check:
+        if i in list(graph.keys()):
+            check2+=1
+    if check2==len(list(graph.keys())) and check2!=0:
+        return res[0]
+    if len(res)!=0:
+        return f'no hamilton cycle but this graph has hamilton path or pathes: {res}'
+    return 'miss input, try again but with the new graph'
 
-def eiler_cycle():
-    pass
+def eiler_cycle(graph, orientated = False):
+    def is_connected(graph):
+        visited = set()
+
+        def dfs(vertex):
+            visited.add(vertex)
+            for degree in graph[vertex]:
+                if degree not in visited:
+                    dfs(degree)
+
+        start_vertex = next(iter(graph))
+        dfs(start_vertex)
+
+        return len(visited) == len(graph)
+    if not is_connected(graph):
+        return 'Eulerian cycle does not exist.'
+    if orientated is False:
+        for items in graph.items():
+            if len(items[1]) % 2 != 0:
+                return 'Eulerian cycle does not exist'
+        current_vertex = list(graph.keys())[0]
+        eulerian_cycle = [current_vertex]
+        while graph[current_vertex]:
+            next_vertex = graph[current_vertex].pop(0)
+            graph[next_vertex].remove(current_vertex)
+            current_vertex = next_vertex
+            eulerian_cycle.append(current_vertex)
+        return eulerian_cycle
+    else:
+        graph_vertex_degrees = {vertex: len(neighbors) for vertex, neighbors in graph.items()}
+        current_vertex = None
+        for vertex, outdegree in graph_vertex_degrees.items():
+            if outdegree > 0:
+                current_vertex = vertex
+                break
+
+        eulerian_cycle = [current_vertex]
+        while graph[current_vertex]:
+            next_vertex = graph[current_vertex].pop(0)
+            graph_vertex_degrees[current_vertex] -= 1
+            current_vertex = next_vertex
+            eulerian_cycle.append(current_vertex)
+
+        while any(graph_vertex_degrees.values()):
+            for i, vertex in enumerate(eulerian_cycle):
+                if graph[vertex]:
+                    subcycle = [vertex]
+                    while graph[vertex]:
+                        next_vertex = graph[vertex].pop(0)
+                        graph_vertex_degrees[vertex] -= 1
+                        vertex = next_vertex
+                        subcycle.append(vertex)
+                    eulerian_cycle = eulerian_cycle[:i+1] + subcycle + eulerian_cycle[i+1:]
+        return eulerian_cycle
+
+def bipartite_check(graph: dict[int, list[int]]) -> bool:
+    """
+    Checks if graph is bipartite
+    """
+    vertices = list(graph.keys())
+    vertices += [i for v in graph.values() for i in v]
+    vertices = list(set(vertices))
+    for i in vertices:
+        graph.setdefault(i, [])
+    graph = dict(sorted(graph.items(), key=lambda item: len(item[1]), reverse=True))
+    vertices = list(graph.keys())
+    n = len(graph)
+    color = [0 for _ in range(n)]
+    queue = []
+
+    for i, ver in enumerate(vertices):
+        queue.append(ver)
+        for x in graph[ver]:
+            if color[i] == 0 and color[vertices.index(x)] == 0:
+                color[i] = -1
+            elif color[vertices.index(x)] != 0:
+                color[vertices.index(ver)] = - color[vertices.index(x)]
+
+        while queue:
+            vertex = queue.pop(0)
+            for j in graph[vertex]:
+                if vertex == j:
+                    pass
+                elif color[vertices.index(j)] == 0:
+                    color[vertices.index(j)] = - color[vertices.index(vertex)]
+                    queue.append(j)
+                elif color[vertices.index(j)] == color[vertices.index(vertex)]:
+                    return False
+    return True
 
 def izomorf_check():
     pass
 
 def dsatur_paint(graph):
-    import networkx as nx
-    import matplotlib.pyplot as plt
     visited = [list(graph.keys())[0]]
     colors = [["lightgreen", [visited[0]]], ["pink", []], ["m", []]]
     connect = [visited[0]]
@@ -83,7 +196,6 @@ def dsatur_paint(graph):
         G.add_node(i, color=graph_c[i])
         for j in graph_edg[i]:
             G.add_edge(i, j)
-
     node_colors = [G.nodes[i]['color'] for i in G.nodes]
     nx.draw(G, node_color=node_colors, with_labels=True, font_color='white', font_size = 20, node_size = 2000,)
     plt.show()

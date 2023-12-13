@@ -139,8 +139,62 @@ def bipartite_check(graph: dict[int, list[int]]) -> bool:
                     return False
     return True
 
-def izomorf_check():
-    pass
+def izomorf_check(graph1: dict, graph2: dict) -> bool:
+    """Checking if two graphs are izomorf"""
+
+    flag = True
+
+    dct_len_1 = [len(value) for value in graph1.values()]
+    dct_len_2 = [len(value) for value in graph2.values()]
+
+    # vertex degree check
+    if sorted(dct_len_1) != sorted(dct_len_2):
+    # first check
+        flag = False
+
+    # vertex check
+    if len(graph1) != len(graph2):
+    # second check
+        flag = False
+    
+
+#     # edge check
+#     if len({tuple(sorted(value)): key for key, value in graph1.items()}) \
+# != len({tuple(sorted(value)): key for key, value in graph2.items()}):
+#     # third check
+#         flag = False
+
+    # eiler cycle check
+    lst_el_1 = all([i % 2 == 0 for i in dct_len_1])
+    lst_el_2 = all([i % 2 == 0 for i in dct_len_2])
+
+    # fourth check
+    if lst_el_1 != lst_el_2:
+        flag = False
+
+    # eiler path check
+    count1 = 0
+
+    for item in dct_len_1:
+        if item % 2 != 0:
+            count1 += 1
+    
+    count2 = 0
+
+    for item in dct_len_2:
+        if item % 2 != 0:
+            count2 += 1
+
+    # fifth check
+    if count1 == 2 and count2 != 2:
+        flag = False
+    
+    if count1 != 2 and count2 == 2:
+        flag = False
+
+
+    return flag
+
 
 def dsatur_paint(graph):
     visited = [list(graph.keys())[0]]

@@ -27,14 +27,28 @@ def eiler_cycle():
 def izomorf_check():
     pass
 
-
-def paint_graph(graph):
+def dsatur_paint(graph):
+    import networkx as nx
+    import matplotlib.pyplot as plt
     visited = [list(graph.keys())[0]]
-    colors = [["black", [visited[0]]], ["red", []], ["blue", []]]
+    colors = [["lightgreen", [visited[0]]], ["pink", []], ["m", []]]
     connect = [visited[0]]
-    stop = False
-    while len(visited) < len(graph) and not stop:
+    while len(visited) < len(graph):
+        if len(connect) == 0:
+            for i in sorted(graph):
+                if i not in visited:
+                    connect.append(i)
+                    break
         current = connect.pop()
+        if current not in visited and len(graph[current]) == 0:
+            visited.append(current)
+            for color in range(len(colors)):
+                if color == 1 and len(colors[color][1]) > 0 and len(colors[color+1][1]) == 0:
+                    colors[color+1][1].append(current)
+                    break
+                if all(elem not in graph[current] for elem in colors[color][1]) and current not in colors[color][1]:
+                    colors[color][1].append(current)
+                    break
         for i in graph[current]:
             if i not in visited:
                 visited.append(i)
@@ -46,12 +60,31 @@ def paint_graph(graph):
                         colors[color][1].append(i)
                         break
                 connect.append(i)
-    if stop:
+            elif (current not in visited and all(elem in visited for elem in graph[current])):
+                visited.append(current)
+                for color in range(len(colors)):
+                    if color == 1 and len(colors[color][1]) > 0 and len(colors[color+1][1]) == 0:
+                        colors[color+1][1].append(current)
+                        break
+                    if all(elem not in graph[current] for elem in colors[color][1]) and current not in colors[color][1]:
+                        colors[color][1].append(current)
+                        break
+                connect.append(current)
+    color_map = {}
+    for color in colors:
+        for node in sorted(color[1]):
+            color_map[node] = color[0]
+    if len(color_map) != len(graph):
         return False
-    else:
-        color_map = {}
-        for color in colors:
-            for node in color[1]:
-                color_map[node] = color[0]
-        return color_map
-print(paint_graph(read_csv("ff.csv")))
+    graph_edg = graph
+    graph_c = color_map
+    G = nx.Graph()
+    for i in graph_edg:
+        G.add_node(i, color=graph_c[i])
+        for j in graph_edg[i]:
+            G.add_edge(i, j)
+
+    node_colors = [G.nodes[i]['color'] for i in G.nodes]
+    nx.draw(G, node_color=node_colors, with_labels=True, font_color='white', font_size = 20, node_size = 2000,)
+    plt.show()
+print(dsatur_paint({1: [2, 4, 5], 2: [1, 3], 3: [1, 2], 4: [1,5], 5: [1,4]})) 

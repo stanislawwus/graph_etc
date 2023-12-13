@@ -1,3 +1,6 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+
 def read_csv(file_path, orientated = False):
     with open(file_path, "r+", encoding="utf-8") as f:
         content = f.readlines()
@@ -139,9 +142,60 @@ def bipartite_check(graph: dict[int, list[int]]) -> bool:
 def izomorf_check():
     pass
 
-
-def paint_graph():
-    pass
-
-
-print(read_csv("ff.csv", True))
+def dsatur_paint(graph):
+    visited = [list(graph.keys())[0]]
+    colors = [["lightgreen", [visited[0]]], ["pink", []], ["m", []]]
+    connect = [visited[0]]
+    while len(visited) < len(graph):
+        if len(connect) == 0:
+            for i in sorted(graph):
+                if i not in visited:
+                    connect.append(i)
+                    break
+        current = connect.pop()
+        if current not in visited and len(graph[current]) == 0:
+            visited.append(current)
+            for color in range(len(colors)):
+                if color == 1 and len(colors[color][1]) > 0 and len(colors[color+1][1]) == 0:
+                    colors[color+1][1].append(current)
+                    break
+                if all(elem not in graph[current] for elem in colors[color][1]) and current not in colors[color][1]:
+                    colors[color][1].append(current)
+                    break
+        for i in graph[current]:
+            if i not in visited:
+                visited.append(i)
+                for color in range(len(colors)):
+                    if color == 1 and len(colors[color][1]) > 0 and len(colors[color+1][1]) == 0:
+                        colors[color+1][1].append(i)
+                        break
+                    if all(elem not in graph[i] for elem in colors[color][1]) and i not in colors[color][1]:
+                        colors[color][1].append(i)
+                        break
+                connect.append(i)
+            elif (current not in visited and all(elem in visited for elem in graph[current])):
+                visited.append(current)
+                for color in range(len(colors)):
+                    if color == 1 and len(colors[color][1]) > 0 and len(colors[color+1][1]) == 0:
+                        colors[color+1][1].append(current)
+                        break
+                    if all(elem not in graph[current] for elem in colors[color][1]) and current not in colors[color][1]:
+                        colors[color][1].append(current)
+                        break
+                connect.append(current)
+    color_map = {}
+    for color in colors:
+        for node in sorted(color[1]):
+            color_map[node] = color[0]
+    if len(color_map) != len(graph):
+        return False
+    graph_edg = graph
+    graph_c = color_map
+    G = nx.Graph()
+    for i in graph_edg:
+        G.add_node(i, color=graph_c[i])
+        for j in graph_edg[i]:
+            G.add_edge(i, j)
+    node_colors = [G.nodes[i]['color'] for i in G.nodes]
+    nx.draw(G, node_color=node_colors, with_labels=True, font_color='white', font_size = 20, node_size = 2000,)
+    plt.show()

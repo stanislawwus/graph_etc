@@ -263,3 +263,11 @@ def dsatur_paint(graph):
     node_colors = [G.nodes[i]['color'] for i in G.nodes]
     nx.draw(G, node_color=node_colors, with_labels=True, font_color='white', font_size = 20, node_size = 2000,)
     plt.show()
+
+if __name__ == "__main__":
+    gr1 = read_csv("graph_1.csv")
+    gr2 = read_csv("graph_2.csv")
+
+    # print(izomorf_check(gr1, gr2))
+
+    # dsatur_paint(gr2)

@@ -144,16 +144,17 @@ def izomorf_check(graph1: dict, graph2: dict) -> bool:
 
     flag = True
 
+    # vertex check
+    if len(graph1) != len(graph2):
+        # first check
+        flag = False
+
+
     dct_len_1 = [len(value) for value in graph1.values()]
     dct_len_2 = [len(value) for value in graph2.values()]
 
     # vertex degree check
     if sorted(dct_len_1) != sorted(dct_len_2):
-    # first check
-        flag = False
-
-    # vertex check
-    if len(graph1) != len(graph2):
     # second check
         flag = False
     

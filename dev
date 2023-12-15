@@ -49,6 +49,7 @@ def hamilton_main(graph):
         return f'no hamilton cycle but this graph has hamilton path or pathes: {res}'
     return 'miss input, try again but with the new graph'
 
+
 def eiler_cycle(graph, orientated = False):
     def is_connected(graph):
         visited = set()
@@ -146,7 +147,7 @@ def izomorf_check(graph1: dict, graph2: dict) -> bool:
 
     # vertex check
     if len(graph1) != len(graph2):
-        # first check
+    # first check
         flag = False
 
 
@@ -268,8 +269,9 @@ def dsatur_paint(graph):
 if __name__ == "__main__":
     gr1 = read_csv("graph_1.csv")
     gr2 = read_csv("graph_2.csv")
+    gr4 = read_csv("graph_4.csv")
 
     # print(izomorf_check(gr1, gr2))
 
-    # dsatur_paint(gr2)
-    print(bipartite_check(gr1))
+    dsatur_paint(gr4)
+    # print(bipartite_check(gr1))

@@ -158,11 +158,21 @@ def izomorf_check(graph1: dict, graph2: dict) -> bool:
         flag = False
     
 
-#     # edge check
-#     if len({tuple(sorted(value)): key for key, value in graph1.items()}) \
-# != len({tuple(sorted(value)): key for key, value in graph2.items()}):
-#     # third check
-#         flag = False
+    # edge check
+    edg_lst_1 = []
+    edg_lst_2 = []
+
+    for key, value in graph1.items():
+        for i in value:
+            edg_lst_1.append((key, i))
+    
+    for key, value in graph2.items():
+        for i in value:
+            edg_lst_2.append((key, i))
+    
+    if len(edg_lst_1) != len(edg_lst_2):
+        # third check
+        flag = False
 
     # eiler cycle check
     lst_el_1 = all([i % 2 == 0 for i in dct_len_1])

@@ -21,7 +21,7 @@ def read_csv(file_path, orientated = False):
             graph[a].append(b)
     return graph
 
-def main(graph):
+def hamilton_main(graph):
     res=[]
     def hamilton(graf, size, start, path=[]):
         if start not in path:
@@ -271,3 +271,4 @@ if __name__ == "__main__":
     # print(izomorf_check(gr1, gr2))
 
     # dsatur_paint(gr2)
+    print(bipartite_check(gr1))
